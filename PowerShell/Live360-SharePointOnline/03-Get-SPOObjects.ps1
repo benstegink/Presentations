@@ -1,3 +1,6 @@
+$bp = Set-PSBreakpoint -Variable wait -Mode Write -Script $psISE.CurrentFile.FullPath
+$using = "CSOM"
+
 #Get the Client Context
 function Get-SPOClientContext(){
 	$loadInfo1 = [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SharePoint.Client")
@@ -13,29 +16,72 @@ function Get-SPOClientContext(){
 	return $ctx
 }
 
-#Site Collection
-$site = $ctx.Site
-$ctx.Load($site)
-$ctx.ExecuteQuery()
+$wait = "Here"
 
-########## Web #########
-$web = $site.RootWeb
-$ctx.Load($web)
-$ctx.ExecuteQuery()
+$ctx = Get-SPOClientContext
 
-#Sub Webs
-foreach($web in $web.Webs){Write-Host $web.Title " - " $web.Url}
-$webs = $web.Webs
-$ctx.Load($webs)
-$ctx.ExecuteQuery()
+$wait= "Here"
 
-$webs - # Doesn't Work
-#You need to use:
-foreach($web in $web.Webs)
-{
-	Write-Host $web.Title " - " $web.Url
+if($using = "CSOM"){
+    #Site Collection
+    $site = $ctx.Site
+    $ctx.Load($site)
+    $ctx.ExecuteQuery()
+
+    $wait = "Here"
+
+    ########## Web #########
+    #Get the Root Web
+    $web = $site.RootWeb
+    $ctx.Load($web)
+    $ctx.ExecuteQuery()
+
+    #Get the root web properties
+    $prop = $web.AllProperties
+    $ctx.Load($prop)
+    $ctx.ExecuteQuery()
+
+    #Sub Webs
+    $webs = $web.Webs
+    $ctx.Load($webs)
+    $ctx.ExecuteQuery()
+
+    #$webs # Doesn't Work
+
+    #You need to use:
+    foreach($subweb in $web.Webs)
+    {
+	    
+        $prop = $subweb.AllProperties
+        $sw = $subweb.Webs
+        $ctx.Load($sw)
+        $ctx.Load($prop)
+        $ctx.ExecuteQuery()
+        if($subweb.Url -ne $site.RootWeb.Url){
+            Write-Host $subweb.Title " - " $web.Url
+            Write-Host "The Number of Subwebs is:" $sw.Count
+            Write-Host "Inherit Parent Navigation:" $subweb.AllProperties.FieldValues.__InheritCurrentNavigation
+        }
+    }
+
+    #List
+
+    #List Item
 }
 
-#List
+$wait = "Here"
 
-#List Item
+if($using = "DEVPnP"){
+    #Site Collection
+
+    ########## Web #########
+    #Get the Root Web
+
+    #Get the root web properties
+
+    #Sub Webs
+
+    #List
+
+    #List Item
+}
