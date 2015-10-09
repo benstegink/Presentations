@@ -1,4 +1,5 @@
 ﻿<#
+    Source for Script: http://www.powershellmagazine.com/2013/08/05/pstip-reset-your-ise-runspace/
 .Synopsis
    Moves open files to a new PowerShell tab
 .Example
