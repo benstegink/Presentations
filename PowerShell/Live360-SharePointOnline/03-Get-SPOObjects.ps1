@@ -25,8 +25,11 @@ $wait= "Here"
 if($using = "CSOM"){
     #Site Collection
     $site = $ctx.Site
+    $features = $site.Features
+    $ctx.Load($features)
     $ctx.Load($site)
     $ctx.ExecuteQuery()
+    Write-Host $features
 
     $wait = "Here"
 
