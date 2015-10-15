@@ -1,4 +1,3 @@
-$bp = Set-PSBreakpoint -Variable wait -Mode Write -Script $psISE.CurrentFile.FullPath
 $using = "CSOM"
 
 #Get the Client Context
@@ -68,23 +67,18 @@ if($using = "CSOM"){
     }
 
     #List
+    $lists = $web.Lists
+    $ctx.Load($lists)
+    $ctx.ExecuteQuery()
+    foreach($list in $lists){
+        Write-Host $list.Title
+    }
+
 
     #List Item
+    $documents = $lists["Documents"]
+    $ctx.Load($documents)
+    $ctx.ExecuteQuery()
 }
 
 $wait = "Here"
-
-if($using = "DEVPnP"){
-    #Site Collection
-
-    ########## Web #########
-    #Get the Root Web
-
-    #Get the root web properties
-
-    #Sub Webs
-
-    #List
-
-    #List Item
-}
