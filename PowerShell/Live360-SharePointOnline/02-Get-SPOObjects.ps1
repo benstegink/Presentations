@@ -1,4 +1,4 @@
-
+. C:\Github\Presentations\PowerShell\Live360-SharePointOnline\FunctionFiles\Load-SPOFunctions.ps1
 
 
 $creds = Get-Credential
@@ -70,6 +70,9 @@ break
 
 Write-Host "Begin Site Collections" -ForegroundColor Green
 
+#initial array of site collections
+
+$siteColl = @()
 foreach($site in $sites){
     if($site.Url -notmatch "http://www"){
         Connect-SPOnline -Url $site.Url -Credentials $creds
@@ -78,21 +81,26 @@ foreach($site in $sites){
         $DevPnPSite.Context.Load($DevPnPSite)
         $DevPnPSite.Context.ExecuteQuery()
         #End User CSOM
-        $obj = New-Object PSObject
-        $obj | Add-Member NoteProperty URL $DevPnPSite.Url
-        Write-Host $DevPnPSite
+
+        #User Custom functino to create a custom site collection object
+        $objSite = Create-SiteObject -Url $DevPnPSite.Url -AllowSPDesigner $DevPnPSite.AllowDesigner
+        #add the object to the array
+        $siteColl += $objSite
     }
 
 }
+
+#Output the entire list of site collection objects
+$siteColl | ft Url,AllowSPDesigner
 
 #endregion
 
 break
 
 
-
 ########## Web #########
 #Get the Root Web
+
 
 #Get the root web properties
 
