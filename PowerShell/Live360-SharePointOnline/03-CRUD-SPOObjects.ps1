@@ -47,7 +47,18 @@ Add-SPOFile -Path 'C:\DemoFiles\001113 update.doc' -Folder "/Shared Documents"
 
 
 ########## Edit List Item ##########
+Get-SPOListItem -List "Documents"
+$items = Get-SPOListItem -List "Documents"
+$item = $items[2]
+$item["Title"]
+$item["Title"] = "Temp Title"
+$item.Update()
+$item.Context.ExecuteQuery()
+
+
 
 ########## Delete List Item ##########
 
 #Delete List Item
+$item.DeleteObject()
+$item.Context.ExecuteQuery()

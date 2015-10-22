@@ -125,7 +125,16 @@ foreach($web in $subwebs){
 
 #List Item
 Get-SPOListItem
-foreach($i in $items2){Write-Host $i.FieldValues.File_x0020_Type "-" $i.FieldValues.FileLeafRef}
-$i = Get-SPOListItem -List Documents -Id 6
+$items = Get-SPOListItem -List "Documents"
+foreach($i in $items){Write-Host $i.FieldValues.File_x0020_Type "-" $i.FieldValues.FileLeafRef}
+$i = $items[0]
 $i.FieldValues
 $i.FieldValues.Created
+
+#or#
+$i = $items | where{$_.FieldValues.FileLeafRef -eq "[insert filename]"}
+
+#get all items of a filetype
+
+$xlsItems = $items | ? {$_.FieldValues.File_x0020_Type -eq "xls" -or $_.FieldValues.File_x0020_Type -eq "xlsx"}
+foreach($i in $xlsItems){Write-Host $i.FieldValues.File_x0020_Type "-" $i.FieldValues.FileLeafRef}
