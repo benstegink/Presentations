@@ -23,3 +23,17 @@ function Get-SubWebs($url,$creds){
         return $web2
     }
 }
+
+function Get-SPOUid($loginName,$web){
+    $user = $web.EnsureUser($loginName)
+    $web.Context.Load($user)
+    $web.Context.ExecuteQuery()
+    return $user
+}
+
+function Get-SPOListFields($list){
+    $fields = $list.Fields
+    $list.Context.Load($fields)
+    $list.Context.ExecuteQuery()
+    return $fields
+}
