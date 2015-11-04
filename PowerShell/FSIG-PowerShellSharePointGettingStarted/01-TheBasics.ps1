@@ -1,4 +1,6 @@
-﻿#######
+﻿Add-PSSnapin Microsoft.SharePoint.PowerShell
+
+#######
 #
 # pipe = |
 # foreach-object = foreach = %

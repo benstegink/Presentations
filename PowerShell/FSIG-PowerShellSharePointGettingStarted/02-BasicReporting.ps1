@@ -11,7 +11,7 @@ $web.Lists.Count
 
 $lists = $web.Lists
 foreach($list in $lists){
-    Write-Host $list - $list.ItemCount
+    Write-Host $list.Title "-" $list.ItemCount
 }
 
 $list = $web.Lists["Master Page Gallery"]
