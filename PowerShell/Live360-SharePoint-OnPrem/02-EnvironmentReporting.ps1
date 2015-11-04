@@ -1,15 +1,25 @@
 ########## Variables ##########
-$webApp = "http://webapplication"
+$webApp = "http://intranet"
 ########## End Variables #########
 
 #Load Functions
-. D:\SP2013\Scripts\Reports\Reporting-Functions.ps1
-. D:\SP2013\Scripts\Provisioning\Common\Export-XLSX.ps1
+. E:\Github\Presentations\PowerShell\Live360-SharePoint-OnPrem\FunctionFiles\ReportingFunctions.ps1
+. E:\Github\Presentations\PowerShell\Live360-SharePoint-OnPrem\FunctionFiles\Export-XLSX.ps1
 
 $sites = Get-SPWebApplication $webApp | Get-SPSite -Limit ALL
 $siteReport = @()
 $con = New-Object System.Data.SQLClient.SqlConnection
-$con.ConnectionString = "Data Source=SQLServerL;Initial Catalog=Databaseg;User ID=spReporting;Password=mypassword"
+#On Prem
+#$con.ConnectionString = "Data Source=SQLServerL;Initial Catalog=Databaseg;User ID=spReporting;Password=mypassword"
+#Azure
+#Get Credentials from a file, use https://github.com/benstegink/PowerShellScripts/blob/master/Misc/Create-CredentialFile.ps1 to create the file and make it of type SQL
+$password = get-content C:\Users\spadmin\Documents\AzureDBCreds.txt | ConvertTo-SecureString
+$creds = New-Object System.Management.Automation.PSCredential -argumentlist "OnPremReporting",$password
+$username = $creds.UserName
+$password = $creds.GetNetworkCredential().Password
+
+
+$con.ConnectionString = "Server=tcp:sharepointdata.database.windows.net;Database=SharePoitnOnPrem;User ID=$username;Password=$password;Trusted_Connection=False;Encrypt=True;"
 $con.Open()
 $cmd = New-Object System.Data.SqlClient.SqlCommand
 $cmd.Connection = $con
