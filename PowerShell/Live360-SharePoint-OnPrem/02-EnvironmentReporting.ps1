@@ -1,12 +1,15 @@
 ########## Variables ##########
-$webApp = "http://intranet"
+#$webApp = "http://intranet"
+$mysitesURL = "http:mysite"
 ########## End Variables #########
+
+Add-PSSnapin microsoft.sharepoint.powershell
 
 #Load Functions
 . E:\Github\Presentations\PowerShell\Live360-SharePoint-OnPrem\FunctionFiles\ReportingFunctions.ps1
 . E:\Github\Presentations\PowerShell\Live360-SharePoint-OnPrem\FunctionFiles\Export-XLSX.ps1
 
-$sites = Get-SPWebApplication $webApp | Get-SPSite -Limit ALL
+$sites = Get-SPWebApplication | Get-SPSite -Limit ALL
 $siteReport = @()
 $con = New-Object System.Data.SQLClient.SqlConnection
 #On Prem
@@ -31,8 +34,12 @@ foreach($site in $sites){
     $usageString = $usage.ToString("#.##")
     $date = Get-Date
     $date = $date.ToShortDateString()
+    $sitetype = $site.RootWeb.AllProperties["Sitetype"]
+    if($site.RootWeb.Url -match "http://mysite"){
+        $sitetype = "MySite"
+    }
 
-    $cmd.CommandText = "INSERT INTO SiteCollections (Date,SiteTitle,SiteUrl,SizeInMB,Documents,LastItemModified) VALUES('{0}','{1}','{2}','{3}','{4}','{5}')" -f $date,$site.RootWeb.Title,$site.Url,$usageString,$items,$site.RootWeb.LastItemModifiedDate
+    $cmd.CommandText = "INSERT INTO SiteCollections (Date,SiteTitle,SiteUrl,SizeInMB,Documents,LastItemModified,Sitetype) VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}')" -f $date,$site.RootWeb.Title,$site.Url,$usageString,$items,$site.RootWeb.LastItemModifiedDate,$sitetype
     $cmd.ExecuteNonQuery()
 }
 $con.Close()
