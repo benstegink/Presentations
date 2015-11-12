@@ -1,5 +1,3 @@
-$bp = Set-PSBreakpoint -Variable wait -Mode Write -Script $psISE.CurrentFile.FullPath
-
 ########## Web Applications ##########
 #Get all Web Applications
 $wa = Get-SPWebApplication
@@ -8,7 +6,7 @@ $wa = Get-SPWebApplication
 $wa.Count
 $wa | ft Name, URL
 
-$wait = "Here"
+break
 
 ########## Site Collections ##########
 #Get all Site Collections
@@ -16,10 +14,15 @@ $sites = $wa | Get-SPSite -Limit ALL
 #-or-
 $sites = Get-SPWebApplication | Get-SPSite -Limit ALL
 $sites.Count
+#-or-
+$sites = Get-SPSite -Limit ALL
+$sites.Count
+
 #Since sites are a "shell" no name or title, the rootweb has the Title
+$site = $sites[1]
 $sites | ft Url
 
-$wait = "Here"
+break
 
 ########## Webs ##########
 #Get all Sites
@@ -29,14 +32,15 @@ $webs = Get-SPWebApplication | Get-SPSite -Limit ALL | Get-SPWeb -Limit ALL
 $webs.Count
 $webs | ft Title,Url
 
-$wait = "here"
+break
 
 
 #Looping
+$wa = Get-SPWebApplication
 foreach($a in $wa){
     # Perform Actions on Web App
     Write-Host "Web Application:" $a.Url -ForegroundColor Green
-    $sites = $wa | Get-SPSite
+    $sites = $a | Get-SPSite
     foreach($site in $sites){
         #Perform Actions on Site Collections
         Write-Host "Site Collection:" $site.Url -ForegroundColor Red
@@ -48,10 +52,11 @@ foreach($a in $wa){
     }
 }
 
-$wait = "Here"
+break
 
 $webs = Get-SPWebApplication | Get-SPSite -Limit ALL | Get-SPWeb -Limit ALL
 foreach($web in $webs){
-    Write-Host $web.Title ":" $web.Url
+    Write-Host $web.Title ":" -ForegroundColor Yellow
+    Write-Host `t $web.Url -ForegroundColor Green
 }
 
