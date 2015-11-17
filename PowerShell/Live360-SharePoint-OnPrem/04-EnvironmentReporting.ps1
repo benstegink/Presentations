@@ -1,3 +1,5 @@
+Add-PSSnapin microsoft.sharepoint.powershell
+
 #Before running this script you must first create a credential file using
 # https://github.com/benstegink/Presentations/blob/master/PowerShell/Live360-SharePoint-OnPrem/FunctionFiles/Create-CredentialFile.ps1
 # --OR --

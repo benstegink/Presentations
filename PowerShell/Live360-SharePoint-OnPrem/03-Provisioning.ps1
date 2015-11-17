@@ -1,3 +1,5 @@
+Add-PSSnapin microsoft.sharepoint.powershell
+
 #region provisioning sites
 function Provision-TeamSite($url,$name,$requestor,$sitetype){
     . E:\Github\Presentations\PowerShell\Live360-SharePoint-OnPrem\FunctionFiles\Provisioning-Functions.ps1

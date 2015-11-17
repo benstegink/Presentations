@@ -1,3 +1,5 @@
+Add-PSSnapin microsoft.sharepoint.powershell
+
 ########## Web Applications ##########
 #Get all Web Applications
 $wa = Get-SPWebApplication
@@ -18,9 +20,13 @@ $sites.Count
 $sites = Get-SPSite -Limit ALL
 $sites.Count
 
+#All Site Collections
+$sites | ft Url
+
 #Since sites are a "shell" no name or title, the rootweb has the Title
 $site = $sites[1]
-$sites | ft Url
+$site
+
 
 break
 
@@ -43,7 +49,7 @@ foreach($a in $wa){
     $sites = $a | Get-SPSite
     foreach($site in $sites){
         #Perform Actions on Site Collections
-        Write-Host "Site Collection:" $site.Url -ForegroundColor Red
+        Write-Host "Site Collection:" $site.Url -ForegroundColor cyan
         $webs = $site.AllWebs
         foreach($web in $webs){
             # Perform Actions on Webs Here

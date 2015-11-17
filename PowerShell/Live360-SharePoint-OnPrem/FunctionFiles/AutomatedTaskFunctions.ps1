@@ -51,21 +51,20 @@ function Create-SPListView($list,$viewname){
             if ($view -eq $null){
                 #Columns
                 $viewFields = New-Object System.Collections.Specialized.StringCollection
-                [void] $viewFields.Add("LinkTitle")
-                [void] $viewFields.Add("AptarWishDescription")
-                [void] $viewFields.Add("AptarWishStakeholders")
-                [void] $viewFields.Add("AptarWishStatus")
+                [void] $viewFields.Add("DocIcon")
+                [void] $viewFields.Add("LinkFilename")
                 [void] $viewFields.Add("Modified")
+                [void] $viewFields.Add("Modified By")
 
                 #View Properties
-                $viewQuery = "<OrderBy><FieldRef Name='Modified' Ascending='FALSE' /></OrderBy><Where><Eq><FieldRef Name='AptarWishStatus' /><Value Type='Computed'>Under Review</Value></Eq></Where>"
+                $viewQuery = "<OrderBy><FieldRef Name='Modified' Ascending='FALSE' /></OrderBy><Where><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Project Plan</Value></Eq></Where>"
                 $viewRowLimit = 30
                 $viewPaged = $true
                 $viewDefaultView = $false
 
                 #Create the view in the destination list
                 $newview = $list.Views.Add($viewTitle, $viewFields, $viewQuery, $viewRowLimit, $viewPaged, $viewDefaultView )
-                ##Write-Host ("View '" + $viewTitle + "' created in list '" + $list.Title)
+                Write-Host ("View '" + $viewTitle + "' created in list '" + $list.Title) -ForegroundColor Green
             }
             else{
                 $view.ViewFields.DeleteAll()
@@ -73,21 +72,20 @@ function Create-SPListView($list,$viewname){
                 $view = $list.Views[$viewTitle]
                 
                 #View Columns
-                [void] $view.viewFields.Add("LinkTitle")
-                [void] $view.viewFields.Add("AptarWishDescription")
-                [void] $view.viewFields.Add("AptarWishStakeholders")
-                [void] $view.viewFields.Add("AptarWishStatus")
-                [void] $view.viewFields.Add("Modified")
+                [void] $view.ViewFields.Add("DocIcon")
+                [void] $view.ViewFields.Add("LinkFilename")
+                [void] $view.ViewFields.Add("Modified")
+                [void] $view.ViewFields.Add("Modified By")
 
                 #View Properties
-                $view.Query = "<OrderBy><FieldRef Name='Modified' Ascending='FALSE' /></OrderBy><Where><Eq><FieldRef Name='AptarWishStatus' /><Value Type='Computed'>Under Review</Value></Eq></Where>"
+                $view.Query = "<OrderBy><FieldRef Name='Modified' Ascending='FALSE' /></OrderBy><Where><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Project Plan</Value></Eq></Where>"
                 $view.RowLimit = 30 
                 $view.Paged = $true
                 $view.DefaultView = $false
                 
                 #Update the existing view in the destination list
                 $view.Update()
-                ##Write-Host "$viewtitle view already existed -- updated"
+                Write-Host "$viewtitle view already existed -- updated" -ForegroundColor Yellow
             }
         }
 
@@ -108,11 +106,11 @@ function Create-SPListView($list,$viewname){
                 $viewQuery = "<OrderBy><FieldRef Name='Modified' Ascending='FALSE' /></OrderBy><Where><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Technical Specifications</Value></Eq></Where>"
                 $viewRowLimit = 30
                 $viewPaged = $true
-                $viewDefaultView = $true
+                $viewDefaultView = $false
 
                 #Create the view in the destination list
                 $newview = $list.Views.Add($viewTitle, $viewFields, $viewQuery, $viewRowLimit, $viewPaged, $viewDefaultView )
-                ##Write-Host ("View '" + $viewTitle + "' created in list '" + $list.Title)
+                Write-Host ("View '" + $viewTitle + "' created in list '" + $list.Title) -ForegroundColor Green
             }
             else{
                 $view.ViewFields.DeleteAll()
@@ -130,11 +128,11 @@ function Create-SPListView($list,$viewname){
                 $viewQuery = "<OrderBy><FieldRef Name='Modified' Ascending='FALSE' /></OrderBy><Where><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Technical Specifications</Value></Eq></Where>"
                 $view.RowLimit = 30 
                 $view.Paged = $true
-                $view.DefaultView = $true
+                $view.DefaultView = $false
                 
                 #Update the existing view in the destination list
                 $view.Update()
-                ##Write-Host "$viewtitle view already existed -- updated"
+                Write-Host "$viewtitle view already existed -- updated" -ForegroundColor Yellow
             }
         }
         "All Items"{
@@ -185,3 +183,49 @@ function Create-SPListView($list,$viewname){
         }
     }
 }
+ 
+#input parameter should be my site url
+function ListUPPDisplayOrder($siteUrl){
+    Add-Type -Path "C:\program files\common files\microsoft shared\web server extensions\15\isapi\Microsoft.Office.Server.dll"
+    $mysite = Get-SPSite $siteUrl
+    $context = Get-SPServiceContext $mysite
+
+    $psmManager = [Microsoft.Office.Server.UserProfiles.ProfileSubtypeManager]::Get($context)
+    $ps = $psmManager.GetProfileSubtype([Microsoft.Office.Server.UserProfiles.ProfileSubtypeManager]::GetDefaultProfileName([Microsoft.Office.Server.UserProfiles.ProfileType]::User))
+    $pspm = $ps.Properties
+
+    $pspm.PropertiesWithSection | ft Name,IsSection,DisplayName,DisplayOrder
+    #if you have several profile sub-types, you might want to change the following line and use the name of the desired profile sub-type
+}
+ 
+function UPPReorder($configFile,$siteUrl){
+ Add-Type -Path "C:\program files\common files\microsoft shared\web server extensions\15\isapi\Microsoft.Office.Server.dll"
+ $config = [xml] (Get-Content $configFile)
+ $mys = Get-SPSite $siteUrl
+ $context = Get-SPServiceContext $mys
+ #$upcManager = New-Object Microsoft.Office.Server.UserProfiles.UserProfileConfigManager($context)
+ 
+ $psmManager = [Microsoft.Office.Server.UserProfiles.ProfileSubtypeManager]::Get($context)
+ $ps = $psmManager.GetProfileSubtype([Microsoft.Office.Server.UserProfiles.ProfileSubtypeManager]::GetDefaultProfileName([Microsoft.Office.Server.UserProfiles.ProfileType]::User))
+ $pspm = $ps.Properties
+ 
+ #if you have several profile sub-types, you might want to change the following line and use the name of the desired profile sub-type
+ #$defaultUserProfileSubTypeName = [Microsoft.Office.Server.UserProfiles.ProfileSubtypeManager]::GetDefaultProfileName("User")
+ #$profileSubtypePropManager = $upcManager.ProfilePropertyManager.GetProfileSubtypeProperties($defaultUserProfileSubTypeName)
+ 
+ foreach($property in $config.Configuration.Properties.childnodes){
+	 $propName = $property.Name
+	 if($property.Section -eq "true"){
+		 Write-Host "Updating section $propName ..."
+		 $pspm.SetDisplayOrderBySectionName($property.Name,$property.Order)
+	 }
+	 else{
+		 Write-Host "Updating property $propName ..."
+		 $pspm.SetDisplayOrderByPropertyName($property.Name,$property.Order)
+	 }
+ }
+ $pspm.CommitDisplayOrder()
+ #$profileSubtypePropManager.CommitDisplayOrder()
+ Write-Host "Finished."
+}
+

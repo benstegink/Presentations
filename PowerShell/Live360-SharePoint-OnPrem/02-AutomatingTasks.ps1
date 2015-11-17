@@ -1,3 +1,5 @@
+Add-PSSnapin microsoft.sharepoint.powershell
+
 . E:\Github\Presentations\PowerShell\Live360-SharePoint-OnPrem\FunctionFiles\AutomatedTaskFunctions.ps1
 
 #region CT Field Read Only
@@ -48,8 +50,11 @@ $web = Get-SPWeb http://intranet/sites/it
 $list = $web.Lists["Documents"]
 $list.Views | ft Title
 Create-SPListView -list $List -viewname "Technical Documents"
+Create-SPListView -list $List -viewname "Project Documents"
 
 break
+
+#endregion
 
 #region looping
 #Add New Content type to Documents all IT Sites (based on URL)
@@ -113,3 +118,9 @@ foreach($site in $sites){
 #endregion
 #endregion
 
+#region user profile properties
+
+ListUPPDisplayOrder http://mysite
+UPPReorder E:\UserProperyOrderTest.xml http://mysite
+
+#endregion
