@@ -1,9 +1,11 @@
 #region provisioning sites
 function Provision-TeamSite($url,$name,$requestor,$sitetype){
-    . E:\Github\Presentations\PowerShell\Live360-SharePoint-OnPrem\FunctionFiles\ReportingFunctions.ps1
+    . E:\Github\Presentations\PowerShell\Live360-SharePoint-OnPrem\FunctionFiles\Provisioning-Functions.ps1
 
     #Get the template you want to use
     $siteTemplate = Get-SPWebTemplate | ? {$_.Title -eq "Team Site" -and $_.CompatibilityLevel -eq "15"}
+    
+    
     #Splatting
     $siteColProperties = @{
         Url = $url;
