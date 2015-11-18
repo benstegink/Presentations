@@ -15,6 +15,8 @@ foreach($tmpSite in $sites){
 
         #User Custom functino to create a custom site collection object
         $usage = (Get-SPOProperty -ClientObject $DevPnPSite -Property Usage).Storage/1MB #Get-SPOProperty is a DevPnP Function
+
+        #Create Site Object is a custom fuction
         $objSite = Create-SiteObject -Url $DevPnPSite.Url -AllowSPDesigner $DevPnPSite.AllowDesigner -Storage $usage.ToString("#.##")
         #add the object to the array
         $siteColl += $objSite
@@ -27,5 +29,6 @@ $siteColl | ft Url,Storage
 
 
 #Custom Recursive Function to get all webs
+#Get-SubWebs is a custom function
 $webs = Get-SubWebs -url "https://navuba.sharepoint.com" -creds $creds
 $webs

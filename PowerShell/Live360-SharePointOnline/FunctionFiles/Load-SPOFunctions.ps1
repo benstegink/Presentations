@@ -37,3 +37,21 @@ function Get-SPOListFields($list){
     $list.Context.ExecuteQuery()
     return $fields
 }
+
+function Get-SPOLicensedUsers($users){
+    $spusers = @()
+    foreach($user in $users){
+        if($user.IsLicensed -eq $true){
+            $status = $user.Licenses.ServiceStatus
+            foreach($s in $status){
+                if($s.ServicePlan.ServiceType -eq "SharePoint"){
+                    $userLic = New-Object PSObject
+                    $userLic | Add-Member NoteProperty DisplayName $user.DisplayName
+                    $userLic | Add-Member NoteProperty SPLicenseType $s.ServicePlan.ServiceName
+                    $spusers += $userLic
+                }
+            }
+        }
+    }
+    return $spusers
+}

@@ -30,4 +30,3 @@ $adminUrl = "https://navuba-admin.sharepoint.com"
 
 Connect-SPOnline -Url $url -Credentials $creds
 Connect-SPOService -Url $adminUrl -Credential $creds
-

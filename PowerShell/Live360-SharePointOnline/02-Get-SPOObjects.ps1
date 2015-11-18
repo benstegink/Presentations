@@ -135,6 +135,5 @@ $i.FieldValues.Created
 $i = $items | where{$_.FieldValues.FileLeafRef -eq "[insert filename]"}
 
 #get all items of a filetype
-
 $xlsItems = $items | ? {$_.FieldValues.File_x0020_Type -eq "xls" -or $_.FieldValues.File_x0020_Type -eq "xlsx"}
 foreach($i in $xlsItems){Write-Host $i.FieldValues.File_x0020_Type "-" $i.FieldValues.FileLeafRef}
