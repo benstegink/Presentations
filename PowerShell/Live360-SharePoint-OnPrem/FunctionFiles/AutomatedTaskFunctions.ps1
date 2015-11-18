@@ -57,7 +57,8 @@ function Create-SPListView($list,$viewname){
                 [void] $viewFields.Add("Modified By")
 
                 #View Properties
-                $viewQuery = "<OrderBy><FieldRef Name='Modified' Ascending='FALSE' /></OrderBy><Where><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Project Plan</Value></Eq></Where>"
+                $viewQuery = "<OrderBy><FieldRef Name='Modified' Ascending='FALSE' /></OrderBy>
+                    <Where><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Project Plan</Value></Eq></Where>"
                 $viewRowLimit = 30
                 $viewPaged = $true
                 $viewDefaultView = $false

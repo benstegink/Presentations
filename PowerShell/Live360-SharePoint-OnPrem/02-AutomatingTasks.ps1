@@ -105,7 +105,7 @@ foreach($a in $wa){
 
 #Enable Feature on all sites
 #region enable features
-$sites = Get-SPWebApplication http://sb1-portal.aptargroup.loc | Get-SPSite -Limit ALL | foreach{$_.Url}
+$sites = Get-SPWebApplication http://intranet | Get-SPSite -Limit ALL | foreach{$_.Url}
 $sites | % { if((Get-SPFeature -Identity ef30e082-1149-44fb-8bbc-b085cd995405 -Site $_ -ErrorAction SilentlyContinue) -eq $null){Write-Host "Enable Feature on $_";Enable-SPFeature -Identity ef30e082-1149-44fb-8bbc-b085cd995405  -URL $_}}
 #-or-
 

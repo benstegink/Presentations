@@ -46,7 +46,7 @@ $wa = Get-SPWebApplication
 foreach($a in $wa){
     # Perform Actions on Web App
     Write-Host "Web Application:" $a.Url -ForegroundColor Green
-    $sites = $a | Get-SPSite
+    $sites = $a | Get-SPSite -Limit ALL
     foreach($site in $sites){
         #Perform Actions on Site Collections
         Write-Host "Site Collection:" $site.Url -ForegroundColor cyan
