@@ -1,0 +1,41 @@
+<Configuration>
+	<Properties>
+		<Property Name="EmailSigInfo" Order="0" Section="true"/>
+		<Property Name="Title" Order="1"/>
+		<Property Name="WorkPhone" Order="2"/>
+		<Property Name="CellPhone" Order="3"/>
+		<Property Name="Fax" Order="4"/>
+		<Property Name="PictureURL" Order="5"/>
+		<Property Name="SPS-Section-BasicInfo" Order="10" Section="true"/>
+		<Property Name="ADGuid" Order="11"/>
+		<Property Name="UserProfile_GUID" Order="12"/>
+		<Property Name="SID" Order="13"/>
+		<Property Name="AccountName" Order="14"/>
+		<Property Name="PreferredName" Order="15"/>
+		<Property Name="SPS-PhoneticDisplayName" Order="16" />
+		<Property Name="FirstName" Order="17"/>
+		<Property Name="SPS-PhoneticFirstName" Order="18"/>
+		<Property Name="LastName" Order="19"/>
+		<Property Name="SPS-PhoneticLastName" Order="20"/>
+		<Property Name="Department" Order="21"/>
+		<Property Name="SPS-Department" Order="22"/>
+		<Property Name="Manager" Order="23"/>
+		<Property Name="AboutMe" Order="24"/>
+		<Property Name="PersonalSpace" Order="25"/>
+		<Property Name="UserName" Order="26"/>
+		<Property Name="QuickLinks" Order="27"/>
+		<Property Name="WebSite" Order="28"/>
+		<Property Name="PublicSiteRedirect" Order="29"/>
+		<Property Name="HomePhone" Order="5106"/>
+		<Property Name="VoIP" Order="5107"/>
+		<Property Name="SPS-EmailOptin" Order="5405"/>
+		<Property Name="SPS-PictureTimestamp" Order="5404"/>
+		<Property Name="SPS-HashTags" Order="5404"/>
+		<Property Name="SPS-PrivacyActivity" Order="5405"/>
+		<Property Name="SPS-PrivacyPeople " Order="5406"/>
+		<Property Name="Office" Order="5103"/>
+		<Property Name="SPS-Location" Order="5104"/>
+		<Property Name="Assistant" Order="5105"/>
+		<Property Name="SPS-JobTitle" Order="5500"/>
+	</Properties>
+</Configuration>
