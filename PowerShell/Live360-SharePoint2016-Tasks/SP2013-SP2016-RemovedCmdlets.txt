@@ -1,0 +1,35 @@
+CommandType Name                                                             
+----------- ----                                                                                         
+     Cmdlet Add-SPEduClassMember                                             
+     Cmdlet Add-SPEduUser                                                                                  
+     Cmdlet Get-SPEduServiceSetting                                                                          
+     Cmdlet Get-SPExcelBIServer                                              
+     Cmdlet Get-SPExcelBlockedFileType                                       
+     Cmdlet Get-SPExcelDataConnectionLibrary                                 
+     Cmdlet Get-SPExcelDataProvider                                          
+     Cmdlet Get-SPExcelFileLocation                                          
+     Cmdlet Get-SPExcelServiceApplication                                    
+     Cmdlet Get-SPExcelUserDefinedFunction                                   
+     Cmdlet Install-SPEduSites                                               
+     Cmdlet New-SPEduClass                                                   
+     Cmdlet New-SPExcelBIServer                                              
+     Cmdlet New-SPExcelBlockedFileType                                       
+     Cmdlet New-SPExcelDataConnectionLibrary                                 
+     Cmdlet New-SPExcelDataProvider                                          
+     Cmdlet New-SPExcelFileLocation                                          
+     Cmdlet New-SPExcelServiceApplication                                    
+     Cmdlet New-SPExcelUserDefinedFunction                                   
+     Cmdlet Remove-SPEduClassMember                                          
+     Cmdlet Remove-SPExcelBIServer                                           
+     Cmdlet Remove-SPExcelBlockedFileType                                    
+     Cmdlet Remove-SPExcelDataConnectionLibrary                              
+     Cmdlet Remove-SPExcelDataProvider                                       
+     Cmdlet Remove-SPExcelFileLocation                                       
+     Cmdlet Remove-SPExcelUserDefinedFunction                                
+     Cmdlet Set-SPEduServiceSetting                                          
+     Cmdlet Set-SPExcelBIServer                                              
+     Cmdlet Set-SPExcelDataConnectionLibrary                                 
+     Cmdlet Set-SPExcelDataProvider                                          
+     Cmdlet Set-SPExcelFileLocation                                          
+     Cmdlet Set-SPExcelServiceApplication                                    
+     Cmdlet Set-SPExcelUserDefinedFunction                                   
