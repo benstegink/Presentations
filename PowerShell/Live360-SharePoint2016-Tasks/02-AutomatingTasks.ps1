@@ -1,6 +1,11 @@
 Add-PSSnapin microsoft.sharepoint.powershell
 
+#Configure Your SharePoint Farm
+
+
 . E:\Github\Presentations\PowerShell\Live360-SharePoint-OnPrem\FunctionFiles\AutomatedTaskFunctions.ps1
+
+
 
 #region CT Field Read Only
 $web = Get-SPWeb "http://intranet/sites/siterequest12"
