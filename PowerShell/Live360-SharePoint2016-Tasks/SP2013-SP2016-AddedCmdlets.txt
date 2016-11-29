@@ -50,16 +50,16 @@ Disable-SPWebTemplateForSiteMaster
 Enable-SPWebTemplateForSiteMaster
 Get-SPWebTemplatesEnabledForSiteMaster 
 
+#SP Site Master 
+Get-SPSiteMaster
+New-SPSiteMaster
+Remove-SPSiteMaster
+
 #SP Site Map
 Dismount-SPSiteMapDatabase
 Get-SPSiteMapDatabase
 Mount-SPSiteMapDatabase
 Upgrade-SPSiteMapDatabase
-
-#SP Site Master 
-Get-SPSiteMaster
-New-SPSiteMaster
-Remove-SPSiteMaster
 
 #SP Access Services
 Export-SPAccessServicesDatabase
