@@ -1,11 +1,6 @@
 Add-PSSnapin microsoft.sharepoint.powershell
 
-#Configure Your SharePoint Farm
-
-
-. E:\Github\Presentations\PowerShell\Live360-SharePoint-OnPrem\FunctionFiles\AutomatedTaskFunctions.ps1
-
-
+. F:\GitHub\Presentations\PowerShell\Live360-SharePoint2016-Tasks\FunctionFiles\AutomatedTaskFunctions.ps1
 
 #region CT Field Read Only
 $web = Get-SPWeb "http://intranet/sites/siterequest12"
@@ -28,41 +23,8 @@ $web.Dispose()
 
 break
 
-#region publish content types
-$hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
-Write-Host "Hub Timer Job last run at" $hub.LastRunTime -ForegroundColor Yellow
-$subs = Get-SPTimerJob | ? {$_.Name -match "metadatasubscribertimerjob"}
-$subs | % {Write-Host "Subscriber Job on Web Application" $_.WebApplication.DisplayName "last run at:" $_.LastRunTime -ForegroundColor Yellow}
-
-Publish-SPContentTypeHub "http://cth" "NAVUBA Content Types"
-Publish-SPContentTypeHub "http://cth" "NAVUBA Project Content Types"
-$hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
-$hub.RunNow()
-sleep -Seconds 20
-Write-Host "Hub Timer Job last run at" $hub.LastRunTime -ForegroundColor Yellow
-$subs | % {$_.RunNow()}
-sleep -Seconds 20
-$subs = Get-SPTimerJob | ? {$_.Name -match "metadatasubscribertimerjob"}
-$subs | % {$_.RunNow()}
-$subs | % {Write-Host "Subscriber Job on Web Application" $_.WebApplication.DisplayName "last run at:" $_.LastRunTime  -ForegroundColor Yellow}
-
-#endregion
-
-break
-
-#region Library Views
-$web = Get-SPWeb http://intranet/sites/it
-$list = $web.Lists["Documents"]
-$list.Views | ft Title
-Create-SPListView -list $List -viewname "Technical Documents"
-Create-SPListView -list $List -viewname "Project Documents"
-
-break
-
-#endregion
-
 #region looping
-#Add New Content type to Documents all IT Sites (based on URL)
+#Add New Content type to Documents all project Sites (based on URL)
 $wa = Get-SPWebApplication
 foreach($a in $wa){
     # Perform Actions on Web App
@@ -123,94 +85,43 @@ foreach($site in $sites){
 #endregion
 #endregion
 
-#region user profile properties
+#region publish content types
+$hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
+$hublastrun = $hub.LastRunTime
+Write-Host "Hub Timer Job last run at" $hub.LastRunTime -ForegroundColor Yellow
+$subs = Get-SPTimerJob | ? {$_.Name -match "metadatasubscribertimerjob"}
+$subs | % {Write-Host "Subscriber Job on Web Application" $_.WebApplication.DisplayName "last run at:" $_.LastRunTime -ForegroundColor Yellow}
 
-ListUPPDisplayOrder http://mysite
-UPPReorder E:\UserProperyOrderTest.xml http://mysite
-
-#endregion
-
-
-#region provisioning sites
-function Provision-TeamSite($url,$name,$requestor,$sitetype){
-    . E:\Github\Presentations\PowerShell\Live360-SharePoint-OnPrem\FunctionFiles\Provisioning-Functions.ps1
-
-    #Get the template you want to use
-    $siteTemplate = Get-SPWebTemplate | ? {$_.Title -eq "Team Site" -and $_.CompatibilityLevel -eq "15"}
-    
-    
-    #Splatting
-    $siteColProperties = @{
-        Url = $url;
-        OwnerAlias='navuba\spadmin';
-        SecondaryOwnerAlias = 'navuba\bstegink';
-        Template = $siteTemplate;
-        Name = $name;
-    }
-
-    #create a new site
-    New-SPSite @siteColProperties
-
-    #Set the script version
-    $scriptversion = "1.0.1"
-    $web = Get-SPWeb $url
-
-    #Evnironment can be: "DEV", "TEST", "PROD"
-	$env = "PROD"
-
-    #set site properties
-	$web.AllProperties["ScriptVersion"] = $scriptversion
-    $web.AllProperties["Requestor"] = $requestor
-    $web.AllProperties["Sitetype"] = $sitetype
-	$web.Update()
-
-    #set environment specefic variables
-    switch($env){
-		"DEV" {
-            $farmadmin = "dev-spadmin"
-			$FarmAdminsGroup = "AD Security Group"
-            
-            #Provisioning List
-            $ProvisioningListUrl = "http://dev-intranet/provisioning"    
-		}
-		"TEST" {
-            $farmadmin = "test-spadmin"
-			$FarmAdminsGroup = "AD Security Group"
-            
-            #Provisioning List
-            $ProvisioningListUrl = "http://test-intranet/provisioning"
-		}
-		"PROD" {
-            $farmadmin = "spadmin"
-			$FarmAdminsGroup = "AD Security Group"
-
-            #Provisioning List
-            $ProvisioningListUrl = "http://intranet/provisioning"
-
-		}
-	}
-
-    $web.Dispose()
-
-    #New Site Owner Group and Permissions
-	Create-SharePointPermissionLevel "Site Owner" $url
-    Create-SharePointGroup -groupname "Site Owner" -url $url -permissionLevel "Site Owner" -farmadmin $farmadmin
-    Add-GroupToSecurityQL $url ($web.Title + " Site Owner")
-
-    Add-SiteCollectionAdmin -url $url -user $requestor
-
-    Activate-TeamSiteFeatures -url $url
-
-    if($sitetype -eq "IS"){
-        Add-ContentTypes -url $url -listname "Documents" -contenttypes "IS" -update $true           
-    }
-    if($sitetype -eq "HR"){
-        Add-ContentTypes -url $url -listname "Documents" -contenttypes "HR" -update $true
-    }
-    Set-FieldDefaults -url $url -listName "Documents"
-
-    Create-SearchNavigation -url $url -sitetype $sitetype
-
-    Add-SiteToProvisioningList -url $url -ProvisioningListURL "http://intranet/provisioning"
+#Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba"
+Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba HR"
+Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba IT"
+$hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
+$hub.RunNow()
+while($hublastrun -eq $hub.LastRunTime){
+    Write-Host "Hub Timer Job running..." -ForegroundColor Yellow
+    $hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
+    sleep -Seconds 5
 }
+Write-Host "Hub Timer Job completed at at" $hub.LastRunTime -ForegroundColor Green
+$subs = Get-SPTimerJob | ? {$_.Name -match "metadatasubscribertimerjob"}
+$subs | % {$_.RunNow();Write-Host "Subscriber Job as been started on Web Application" $_.WebApplication.DisplayName -ForegroundColor Green}
 #endregion
+
+break
+
+#region Library Views
+$web = Get-SPWeb http://intranet/sites/it
+$list = $web.Lists["Documents"]
+$list.Views | ft Title
+Create-SPListView -list $List -viewname "Technical Documents"
+Create-SPListView -list $List -viewname "Project Documents"
+
+#endregion
+
+break
+
+
+
+#Other Things you can automate
+#  - Reordering User Profile Properties
+#

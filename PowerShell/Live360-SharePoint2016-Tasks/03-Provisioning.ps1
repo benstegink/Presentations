@@ -39,11 +39,34 @@ foreach($item in $items){
         $item["SiteUrl"] = $newsite.Url
         $item["ProvisioningStatus"] = "Complete"
         $item.Update()
+
+
+        #Provisioning Functions
+
+        #Set the Site Owner Permissions
+    	Create-SharePointPermissionLevel "Site Owner" $url
+        Create-SharePointGroup -groupname "Site Owner" -url $url -permissionLevel "Site Owner" -farmadmin $farmadmin
+        Add-GroupToSecurityQL $url ($web.Title + " Site Owner")
+
+        Add-SiteCollectionAdmin -url $url -user $requestor
+
+        #Activate Features
+        Activate-TeamSiteFeatures -url $url
+
+        #Add Content Types
+        if($sitetype -eq "IS"){
+            Add-ContentTypes -url $url -listname "Documents" -contenttypes "IS" -update $true           
+        }
+        if($sitetype -eq "HR"){
+            Add-ContentTypes -url $url -listname "Documents" -contenttypes "HR" -update $true
+        }
+
+        #Set Field Defaults
+        Set-FieldDefaults -url $url -listName "Documents"
+
     }
     catch{
         $item["ProvisioningStatus"] = "Error"
         $item.Update()
     }
 }
-
-

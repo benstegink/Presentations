@@ -33,7 +33,7 @@ function Publish-SPContentTypeHub {
     if(!($site -eq $null))
     {
         $contentTypePublisher = New-Object Microsoft.SharePoint.Taxonomy.ContentTypeSync.ContentTypePublisher ($site)
-        $site.RootWeb.ContentTypes | ? {$_.Group -match $Group} | % {
+        $site.RootWeb.ContentTypes | ? {$_.Group -eq $Group} | % {
             $contentTypePublisher.Publish($_)
             write-host "Content type" $_.Name "has been republished" -foregroundcolor Green
         }
