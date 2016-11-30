@@ -9,7 +9,7 @@ foreach($item in $items){
     #$item = $items | ? {$_.Id -eq $item.Id}
     $siteId = $item.ID
     $siteTitle = $item.Title
-    $siteType = $item["SiteType"]
+    $siteType = $item["TypeOfSite"]
     $dept = $item["Department"]
     $siteOwner = $item["SiteOwner"]
 

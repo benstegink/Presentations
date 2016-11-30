@@ -30,7 +30,7 @@ function Provision-TeamSite($url,$name,$requestor,$sitetype){
     #set site properties
 	$web.AllProperties["ScriptVersion"] = $scriptversion
     $web.AllProperties["Requestor"] = $requestor
-    $web.AllProperties["Sitetype"] = $sitetype
+    $web.AllProperties["SiteType"] = $sitetype
 	$web.Update()
 
     #set environment specefic variables
