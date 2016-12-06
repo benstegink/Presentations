@@ -2,19 +2,27 @@ Add-PSSnapin microsoft.sharepoint.powershell
 
 . F:\GitHub\Presentations\PowerShell\Live360-SharePoint2016-Tasks\FunctionFiles\AutomatedTaskFunctions.ps1
 
+break
+
 #region CT Field Read Only
-$web = Get-SPWeb "http://intranet/sites/siterequest12"
-$fieldname = "Conference"
+$web = Get-SPWeb "http://sp16-intranet/team/T_23"
+$fieldname = "DocStatus"
 
 $web.Name
-$List = $web.Lists["Live360"]
+$List = $web.Lists["Documents"]
 $ct = $List.ContentTypes
 foreach ($c in $ct)
 {
-    $c.Name
-    $Field=$c.FieldLinks[$fieldname]
-    if($Field -ne $null){
-        $Field.ReadOnly = $true
+    if($c.Name -ne "Folder" -and $c.Name -ne "Document"){
+        $c.Name
+        $c.ReadOnly = $false
+        $c.Update()
+        $Field=$c.FieldLinks[$fieldname]
+        if($Field -ne $null){
+            $Field.ReadOnly = $true
+            $c.Update()
+        }
+        $c.ReadOnly = $true
         $c.Update()
     }
 }
@@ -22,6 +30,33 @@ $web.Dispose()
 #endregion
 
 break
+
+#region publish content types
+$hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
+$hublastrun = $hub.LastRunTime
+Write-Host "Hub Timer Job last run at" $hub.LastRunTime -ForegroundColor Yellow
+$subs = Get-SPTimerJob | ? {$_.Name -match "metadatasubscribertimerjob"}
+$subs | % {Write-Host "Subscriber Job on Web Application" $_.WebApplication.DisplayName "last run at:" $_.LastRunTime -ForegroundColor Yellow}
+
+#Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba"
+#Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba HR"
+#Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba IT"
+Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba Project"
+$hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
+$hub.RunNow()
+while($hublastrun -eq $hub.LastRunTime){
+    Write-Host "Hub Timer Job running..." -ForegroundColor Yellow
+    $hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
+    sleep -Seconds 5
+}
+Write-Host "Hub Timer Job completed at at" $hub.LastRunTime -ForegroundColor Green
+$subs = Get-SPTimerJob | ? {$_.Name -match "metadatasubscribertimerjob"}
+$subs | % {$_.RunNow();Write-Host "Subscriber Job as been started on Web Application" $_.WebApplication.DisplayName -ForegroundColor Green}
+#endregion
+
+break
+
+
 
 #region looping
 #Add New Content type to Documents all project Sites (based on URL)
@@ -35,7 +70,7 @@ foreach($a in $wa){
         foreach($web in $webs){
             # Perform Actions on Webs Here
 
-            if($web.Url -match "/IT/"){
+            if($web.Url -match "/project/"){
                 Write-Host "Updating" $web.Url -ForegroundColor Green
                 Add-SPContentType -weburl $web.Url -listname "Documents" -contenttype "Requirements Document"
             }
@@ -85,27 +120,7 @@ foreach($site in $sites){
 #endregion
 #endregion
 
-#region publish content types
-$hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
-$hublastrun = $hub.LastRunTime
-Write-Host "Hub Timer Job last run at" $hub.LastRunTime -ForegroundColor Yellow
-$subs = Get-SPTimerJob | ? {$_.Name -match "metadatasubscribertimerjob"}
-$subs | % {Write-Host "Subscriber Job on Web Application" $_.WebApplication.DisplayName "last run at:" $_.LastRunTime -ForegroundColor Yellow}
 
-#Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba"
-Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba HR"
-Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba IT"
-$hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
-$hub.RunNow()
-while($hublastrun -eq $hub.LastRunTime){
-    Write-Host "Hub Timer Job running..." -ForegroundColor Yellow
-    $hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
-    sleep -Seconds 5
-}
-Write-Host "Hub Timer Job completed at at" $hub.LastRunTime -ForegroundColor Green
-$subs = Get-SPTimerJob | ? {$_.Name -match "metadatasubscribertimerjob"}
-$subs | % {$_.RunNow();Write-Host "Subscriber Job as been started on Web Application" $_.WebApplication.DisplayName -ForegroundColor Green}
-#endregion
 
 break
 

@@ -63,16 +63,21 @@ function Update-SharePointGroupOwner($groupname,$groupowner,$url){
 
 
 #Create a SharePoint Group
-function Create-SharePointGroup($groupname,$url,$permissionLevel,$farmadmin){
+function Create-SharePointGroup($groupname,$url,$permissionLevel,$groupOwner,$groupDescription){
     $web = Get-SPWeb $url
     $gname = ($web.Title + " " + $groupname)
 
-    $groupOwner = Get-SPUser -Web $web.Url | ? {$_.UserLogin -match $farmadmin};
+    try{
+        $groupOwner = $web.EnsureUser($groupOwner)
+    }
+    catch{
+        $groupOwner = $web.Groups | ? {$_.Name -match $groupOwner}
+    }
 
     #Create SharePoint Group
     $sg = $web.SiteGroups[$gname]
     if($sg -eq $null){
-        $web.SiteGroups.Add($gname,$groupOwner,$null,"Site Owners Group")
+        $web.SiteGroups.Add($gname,$groupOwner,$null,$groupDescription)
     }
     #Grant Permissions to the Group
     if($permissionLevel -ne $null -and $permissionLevel -ne ""){
@@ -256,8 +261,8 @@ function Set-FieldDefaults($url,$listName){
     $list = $lists[$listName]
     $DocDefault = New-Object -TypeName Microsoft.Office.DocumentManagement.MetadataDefaults $list
     $fieldDocType = $null
-    $fieldDocType = $list.Fields["Document Type"]
-    $DocTypeName = $web.AllProperties["Sitetype"]
+    $fieldDocType = $list.Fields["Navuba Department"]
+    $DocTypeName = $web.AllProperties["Department"]
 
 
     if($fieldDocType -ne $null -and $DocTypeName -ne $null){
@@ -273,7 +278,9 @@ function Add-ContentTypes($url,$listname,$contenttypes,$update){
     $web = Get-SPWeb $url
     switch($contenttypes){
 		"IS" {$cttarray = @("Requirements Document","Technical Specifications")}
-        "HR" {$cttarray = @("Annual Review")}
+        "HR" {$cttarray = @("Employee Handbook")}
+        "HR_Con" {$cttarray = @("Employee Review","Offer Letter")}
+        "Project" {$cttarray = @("Project Scope")}
     }
     $list = $web.Lists[$listname]
     $list.ContentTypesEnabled = $true
@@ -311,7 +318,7 @@ function Add-ContentTypes($url,$listname,$contenttypes,$update){
     $web.Dispose()
 }
 
-function Add-SiteToProvisioningList($url,$ProvisioningListURL){
+<#function Add-SiteToProvisioningList($url,$ProvisioningListURL){
     $web = Get-SPWeb $url
     $provWeb = Get-SPWeb $ProvisioningListURL
     $provList = $provWeb.Lists["Site List"]
@@ -334,7 +341,7 @@ function Add-SiteToProvisioningList($url,$ProvisioningListURL){
         $web.Dispose()
     }
     $provWeb.Dispose()
-}
+}#>
 
 Function Write-Log($url, $message) {
     #Build the log file name based on the site url.
