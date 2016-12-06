@@ -40,8 +40,8 @@ $subs | % {Write-Host "Subscriber Job on Web Application" $_.WebApplication.Disp
 
 #Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba"
 #Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba HR"
-#Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba IT"
-Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba Project"
+Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba IT"
+#Publish-SPContentTypeHub "http://cth.navuba.loc" "Navuba Project"
 $hub = Get-SPTimerJob | ? {$_.Name -match "metadatahubtimerjob"}
 $hub.RunNow()
 while($hublastrun -eq $hub.LastRunTime){
@@ -60,56 +60,47 @@ break
 
 #region looping
 #Add New Content type to Documents all project Sites (based on URL)
-$wa = Get-SPWebApplication
-foreach($a in $wa){
-    # Perform Actions on Web App
-    $sites = $a | Get-SPSite
-    foreach($site in $sites){
-        #Perform Actions on Site Collections
-        $webs = $site.AllWebs
-        foreach($web in $webs){
-            # Perform Actions on Webs Here
+$wa = Get-SPWebApplication http://sp16-intranet
+# Perform Actions on Web App
+$sites = $wa | Get-SPSite -Limit ALL
+foreach($site in $sites){
+    #Perform Actions on Site Collections
+    $webs = $site.AllWebs
+    foreach($web in $webs){
+        # Perform Actions on Webs Here
 
-            if($web.Url -match "/project/"){
-                Write-Host "Updating" $web.Url -ForegroundColor Green
-                Add-SPContentType -weburl $web.Url -listname "Documents" -contenttype "Requirements Document"
-            }
-            else{
-                Write-Host "Web:" $web.Url -ForegroundColor Yellow
-            }
+        if($web.Url -match "/project/"){
+            Write-Host "Updating" $web.Url -ForegroundColor Green
+            Add-SPContentType -weburl $web.Url -listname "Documents" -contenttype "Project Scope Amendment"
+        }
+        else{
+            Write-Host "Web:" $web.Url "is not a project site" -ForegroundColor Yellow
         }
     }
 }
 
 break
 
-#Add New Content type to Documents all IT Sites (based on sitetype)
-$wa = Get-SPWebApplication
-foreach($a in $wa){
-    # Perform Actions on Web App
-    $sites = $a | Get-SPSite
-    foreach($site in $sites){
-        #Perform Actions on Site Collections
-        $webs = $site.AllWebs
-        foreach($web in $webs){
-            # Perform Actions on Webs Here
-
-            if($web.AllProperties["Sitetype"] -eq "IS"){
-                Write-Host "Updating" $web.Url -ForegroundColor Green
-                Add-SPContentType -weburl $web.Url -listname "Documents" -contenttype "Requirements Document"
-            }
-            else{
-                Write-Host "Web:" $web.Url -ForegroundColor Yellow
-            }
+#Add New Content type to Documents all IT Sites (based on Department) that are Team Sites (based on TypeOfSite)
+$wa = Get-SPWebApplication http://sp16-intranet
+# Perform Actions on Web App
+$sites = $a | Get-SPSite -Limit ALL
+foreach($site in $sites){
+    #Perform Actions on Site Collections
+    $webs = $site.AllWebs
+    foreach($web in $webs){
+        # Perform Actions on Webs Here
+        if($web.AllProperties["Department"] -eq "Information Technology" -and $web.AllProperties["TypeOfSite"] -eq "Team Site"){
+            Write-Host "Updating" $web.Url -ForegroundColor Green
+            Add-SPContentType -weburl $web.Url -listname "Documents" -contenttype "Hardware Request"
+        }
+        else{
+            Write-Host "Web:" $web.Url "is not an IT site" -ForegroundColor Yellow
         }
     }
 }
 
 #Enable Feature on all sites
-#region enable features
-$sites = Get-SPWebApplication http://intranet | Get-SPSite -Limit ALL | foreach{$_.Url}
-$sites | % { if((Get-SPFeature -Identity ef30e082-1149-44fb-8bbc-b085cd995405 -Site $_ -ErrorAction SilentlyContinue) -eq $null){Write-Host "Enable Feature on $_";Enable-SPFeature -Identity ef30e082-1149-44fb-8bbc-b085cd995405  -URL $_}}
-#-or-
 
 foreach($site in $sites){
     if((Get-SPFeature -Identity ef30e082-1149-44fb-8bbc-b085cd995405 -Site $site -ErrorAction SilentlyContinue) -eq $null){
@@ -125,11 +116,12 @@ foreach($site in $sites){
 break
 
 #region Library Views
-$web = Get-SPWeb http://intranet/sites/it
+#$web = Get-SPWeb http://sp16-intranet/project/P_17
+$web = Get-SPWeb http://sp16-intranet/team/T_23
 $list = $web.Lists["Documents"]
 $list.Views | ft Title
-Create-SPListView -list $List -viewname "Technical Documents"
-Create-SPListView -list $List -viewname "Project Documents"
+Create-SPListView -list $List -viewname "Requirements Documents"
+Create-SPListView -list $List -viewname "Project Scope Documents"
 
 #endregion
 

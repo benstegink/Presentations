@@ -44,8 +44,8 @@ function Publish-SPContentTypeHub {
 function Create-SPListView($list,$viewname){
     switch($viewname){
        #***********Project Wish Views***********		
-       "Project Documents" {
-            $viewTitle = "Project Documents"
+       "Project Scope Documents" {
+            $viewTitle = "Project Scope Documents"
             $view = $list.Views[$viewTitle]
 
             if ($view -eq $null){
@@ -58,7 +58,8 @@ function Create-SPListView($list,$viewname){
 
                 #View Properties
                 $viewQuery = "<OrderBy><FieldRef Name='Modified' Ascending='FALSE' /></OrderBy>
-                    <Where><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Project Plan</Value></Eq></Where>"
+                    <Where><And><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Project Scope</Value></Eq>
+                    <Eq><FieldRef Name='ContentType' /><Value Type='Text'>Project Scope Amendment</Value></Eq></And></Where>"
                 $viewRowLimit = 30
                 $viewPaged = $true
                 $viewDefaultView = $false
@@ -90,8 +91,8 @@ function Create-SPListView($list,$viewname){
             }
         }
 
-       "Technical Documents"{
-            $viewTitle = "Technical Documents"
+       "Requirements Documents"{
+            $viewTitle = "Requirements Documents"
             $view = $list.Views[$viewTitle]
 
             if ($view -eq $null){
@@ -99,12 +100,12 @@ function Create-SPListView($list,$viewname){
                 $viewFields = New-Object System.Collections.Specialized.StringCollection
                 [void] $viewFields.Add("DocIcon")
                 [void] $viewFields.Add("LinkFilename")
-                [void] $viewFields.Add("Document Type")
+                [void] $viewFields.Add("Navuba Department")
                 [void] $viewFields.Add("Modified")
                 [void] $viewFields.Add("Modified By")
 
                 #View Properties
-                $viewQuery = "<OrderBy><FieldRef Name='Modified' Ascending='FALSE' /></OrderBy><Where><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Technical Specifications</Value></Eq></Where>"
+                $viewQuery = "<OrderBy><FieldRef Name='Modified' Ascending='FALSE' /></OrderBy><Where><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Requirements Document</Value></Eq></Where>"
                 $viewRowLimit = 30
                 $viewPaged = $true
                 $viewDefaultView = $false
@@ -121,7 +122,7 @@ function Create-SPListView($list,$viewname){
                 #View Columns
                 [void] $view.ViewFields.Add("DocIcon")
                 [void] $view.ViewFields.Add("LinkFilename")
-                [void] $view.ViewFields.Add("Document Type")
+                [void] $view.ViewFields.Add("Navuba Department")
                 [void] $view.ViewFields.Add("Modified")
                 [void] $view.ViewFields.Add("Modified By")
 
