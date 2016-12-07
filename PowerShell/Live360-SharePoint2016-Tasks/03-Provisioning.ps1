@@ -1,4 +1,6 @@
-﻿$weburl = "http://sp16-intranet"
+﻿. F:\GitHub\Presentations\PowerShell\Live360-SharePoint2016-Tasks\FunctionFiles\Provisioning-Functions.ps1
+
+$weburl = "http://sp16-intranet"
 $web = Get-SPWeb $weburl
 $list = $web.Lists["Site Requests"]
 $pending = $list.Views["PendingRequests"]
